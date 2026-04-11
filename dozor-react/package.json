@@ -1,0 +1,57 @@
+{
+  "name": "@kharko/dozor-react",
+  "version": "1.0.1",
+  "description": "React bindings for @kharko/dozor session recording SDK",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kolia-zamnius/kharko-dozor.git",
+    "directory": "dozor-react"
+  },
+  "homepage": "https://kharko-dozor-dashboard.vercel.app",
+  "bugs": {
+    "url": "https://github.com/kolia-zamnius/kharko-dozor/issues"
+  },
+  "keywords": [
+    "session-recording",
+    "session-replay",
+    "react",
+    "rrweb",
+    "analytics",
+    "monitoring"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "@kharko/dozor": "*",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@kharko/dozor": "workspace:*",
+    "@types/react": "^19",
+    "react": "^19",
+    "tsup": "^8.5.0",
+    "typescript": "^5"
+  }
+}
