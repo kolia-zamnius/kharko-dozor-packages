@@ -1,6 +1,6 @@
 import type { DozorOptions, UserTraits } from "@kharko/dozor";
 import { Dozor } from "@kharko/dozor";
-import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { DozorContext, NOT_INITIALIZED_SNAPSHOT } from "./context";
 import type { DozorContextValue, DozorProviderProps, DozorSnapshot } from "./types";
 
@@ -42,6 +42,14 @@ function getServerSnapshot(): DozorSnapshot {
 export function DozorProvider({ options, children }: DozorProviderProps) {
   const instanceRef = useRef<Dozor | null>(null);
 
+  // Bump on `init()` to force `useSyncExternalStore` to re-call `subscribe`
+  // with the now-available instance. Without this, the first `subscribe`
+  // runs while `instanceRef.current` is still `null`, returns a no-op, and
+  // — because the callback identity would otherwise be stable — React never
+  // re-subscribes when the SDK is created later. The snapshot would stay
+  // frozen on `NOT_INITIALIZED_SNAPSHOT` for the lifetime of the provider.
+  const [initTick, setInitTick] = useState(0);
+
   // Cache the last snapshot to preserve referential equality when nothing changed.
   // useSyncExternalStore compares via Object.is — returning the same reference avoids
   // unnecessary re-renders in consumers.
@@ -51,7 +59,11 @@ export function DozorProvider({ options, children }: DozorProviderProps) {
     const instance = instanceRef.current;
     if (!instance) return () => {};
     return instance.subscribe(onStoreChange);
-  }, []);
+    // `initTick` is intentionally in the deps: it changes exactly once when
+    // `init()` finishes, which forces React to re-run `subscribe` with the
+    // real instance. This is the fix for the snapshot-freeze bug described
+    // on `initTick` above.
+  }, [initTick]);
 
   const getSnapshot = useCallback((): DozorSnapshot => {
     const instance = instanceRef.current;
@@ -73,6 +85,10 @@ export function DozorProvider({ options, children }: DozorProviderProps) {
   const initInstance = useCallback((opts: DozorOptions): void => {
     if (instanceRef.current) return;
     instanceRef.current = Dozor.init(opts);
+    // Trigger a re-render so `subscribe` is re-evaluated with the new
+    // `initTick` dependency, causing `useSyncExternalStore` to unsubscribe
+    // from the initial no-op and resubscribe to the real SDK instance.
+    setInitTick((t) => t + 1);
   }, []);
 
   // Auto-init on mount when options are provided
