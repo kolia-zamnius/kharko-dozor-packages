@@ -20,14 +20,19 @@ Both packages are required — `@kharko/dozor` is the core SDK, `@kharko/dozor-r
 
 ## Quick start
 
-Wrap your app (or a subtree) with `<DozorProvider>` and pass your API key via the `options` prop:
+Wrap your app (or a subtree) with `<DozorProvider>` and pass your API key + ingest endpoint via the `options` prop:
 
 ```tsx
 import { DozorProvider } from "@kharko/dozor-react";
 
 function App() {
   return (
-    <DozorProvider options={{ apiKey: "dp_your_public_key" }}>
+    <DozorProvider
+      options={{
+        apiKey: "dp_your_public_key",
+        endpoint: "https://your-dozor.example.com/api/ingest",
+      }}
+    >
       <YourApp />
     </DozorProvider>
   );
@@ -56,7 +61,7 @@ React Context provider that manages the `Dozor` singleton. Must wrap any compone
 All options from `@kharko/dozor` are supported:
 
 - `apiKey` (`string`) — **Required.** Public project API key (`dp_...`).
-- `endpoint` (`string`) — Ingest endpoint URL. Default: production endpoint.
+- `endpoint` (`string`) — **Required.** Ingest endpoint URL — full URL (e.g. `"https://your-dozor.example.com/api/ingest"`) or a same-origin relative path (e.g. `"/api/monitor"`) to route through a server proxy for ad-blocker bypass.
 - `flushInterval` (`number`) — Flush interval in ms. Default: `60000`.
 - `batchSize` (`number`) — Max events before auto-flush. Default: `2000`.
 - `autoStart` (`boolean`) — Start recording on init. Default: `true`.
@@ -141,13 +146,24 @@ All properties are reactive — they update automatically when the recorder stat
 
 ## Use cases
 
+> Examples below highlight the option being demonstrated. In real code, also pass `endpoint` alongside `apiKey` — both are required (see [Options](#dozoroptions)).
+
 ### Basic recording
 
 ```tsx
 import { DozorProvider } from "@kharko/dozor-react";
 
 export default function RootLayout({ children }) {
-  return <DozorProvider options={{ apiKey: "dp_your_key" }}>{children}</DozorProvider>;
+  return (
+    <DozorProvider
+      options={{
+        apiKey: "dp_your_key",
+        endpoint: "https://your-dozor.example.com/api/ingest",
+      }}
+    >
+      {children}
+    </DozorProvider>
+  );
 }
 ```
 
