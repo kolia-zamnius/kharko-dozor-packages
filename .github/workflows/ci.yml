@@ -41,4 +41,10 @@ jobs:
           cache: pnpm
 
       - run: pnpm install
+
+      # @kharko/dozor-react resolves @kharko/dozor via package.json#main → dist/.
+      # Each matrix job runs in a fresh checkout, so build the workspace once
+      # before tests so cross-package imports resolve.
+      - run: pnpm build
+
       - run: pnpm -F @kharko/${{ matrix.package }} test
