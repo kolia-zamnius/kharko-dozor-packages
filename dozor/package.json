@@ -41,7 +41,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "test": "vitest run"
   },
   "dependencies": {
     "@rrweb/rrweb-plugin-console-record": "2.0.0-alpha.20",

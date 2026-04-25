@@ -17,5 +17,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# tests
+coverage
+
 # local
 /temp

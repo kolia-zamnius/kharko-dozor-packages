@@ -15,15 +15,26 @@ Requires **Node.js 20+** and **pnpm 10+**.
 
 ### Scripts
 
-| Command            | What it does                                  |
-| ------------------ | --------------------------------------------- |
-| `pnpm build`       | Build all packages (tsup, with type-check)    |
-| `pnpm build:dozor` | Build `@kharko/dozor` only                    |
-| `pnpm build:react` | Build `@kharko/dozor-react` only              |
-| `pnpm dev:dozor`   | Watch mode for `@kharko/dozor`                |
-| `pnpm dev:react`   | Watch mode for `@kharko/dozor-react`          |
+`package.json` only carries CI entries plus per-package shorthand for sub-scope (`build:dozor`, `dev:react`, etc.). One-off ad-hoc runs (coverage, single-test reruns) go through `pnpm -F` / `pnpm exec` directly.
 
-There is no separate type-check or lint command — `pnpm build` covers type-check via tsup. No test framework is set up yet; smoke-test recording behavior in a small consuming app via `pnpm dev:*` + `pnpm link`.
+| Command                            | What it does                                              |
+| ---------------------------------- | --------------------------------------------------------- |
+| `pnpm build`                       | Build all packages (tsup, with type-check)                |
+| `pnpm build:dozor`                 | Build `@kharko/dozor` only                                |
+| `pnpm build:react`                 | Build `@kharko/dozor-react` only                          |
+| `pnpm dev:dozor`                   | Watch mode for `@kharko/dozor`                            |
+| `pnpm dev:react`                   | Watch mode for `@kharko/dozor-react`                      |
+| `pnpm -F @kharko/<pkg> test`       | Run one package's tests (Vitest, jsdom) — what CI invokes |
+
+Ad-hoc runs:
+
+```bash
+pnpm -F @kharko/dozor exec vitest                              # watch-mode tests
+pnpm -F @kharko/dozor exec vitest run --coverage               # coverage report
+pnpm -F @kharko/dozor exec vitest run src/recorder/transport   # single file
+```
+
+Type-check happens via tsup during `pnpm build`. There is no separate lint step. Tests run under jsdom; for behaviour that needs a real browser (CompressionStream, fetch keepalive, real rrweb mutations), smoke-test in a Vite or Next.js app via `pnpm link`.
 
 ## Workspace layout
 
@@ -38,11 +49,13 @@ Two packages live as siblings under the repo root:
 
 ```bash
 pnpm build
+pnpm -F @kharko/dozor test
+pnpm -F @kharko/dozor-react test
 ```
 
-CI runs the same step on every PR — iterating on a pushed PR after a red CI wastes everyone's time.
+CI runs the same set on every PR — iterating after a red CI wastes everyone's time.
 
-If your change touches recording, transport, or privacy masking, smoke-test it in a small Vite or Next.js app via `pnpm link` against a local checkout.
+If your change touches recording, transport, or privacy masking, also smoke-test it in a small Vite or Next.js app via `pnpm link` against a local checkout. jsdom approximates the browser well, but the real DOM is the final ground truth.
 
 ## Branch and PR conventions
 
