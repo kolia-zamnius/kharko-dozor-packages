@@ -1,0 +1,125 @@
+# Contributing
+
+Kharko Dozor SDK packages are open source and welcoming to contributions. PRs are reviewed on a best-effort basis.
+
+## Quick start
+
+```bash
+git clone https://github.com/kolia-zamnius/kharko-dozor-packages.git
+cd kharko-dozor-packages
+pnpm install
+pnpm build
+```
+
+Requires **Node.js 20+** and **pnpm 10+**.
+
+### Scripts
+
+| Command            | What it does                                  |
+| ------------------ | --------------------------------------------- |
+| `pnpm build`       | Build all packages (tsup, with type-check)    |
+| `pnpm build:dozor` | Build `@kharko/dozor` only                    |
+| `pnpm build:react` | Build `@kharko/dozor-react` only              |
+| `pnpm dev:dozor`   | Watch mode for `@kharko/dozor`                |
+| `pnpm dev:react`   | Watch mode for `@kharko/dozor-react`          |
+
+There is no separate type-check or lint command — `pnpm build` covers type-check via tsup. No test framework is set up yet; smoke-test recording behavior in a small consuming app via `pnpm dev:*` + `pnpm link`.
+
+## Workspace layout
+
+Two packages live as siblings under the repo root:
+
+- `dozor/` — `@kharko/dozor`, the framework-agnostic core SDK (rrweb wrapper, transport, slicing, privacy masking).
+- `dozor-react/` — `@kharko/dozor-react`, React Context Provider + `useDozor` hook on top of the core.
+
+`dozor-react` declares `@kharko/dozor` as both `peerDependency` (for npm consumers) and via `workspace:*` in `devDependencies` (for local development).
+
+## Before you open a PR
+
+```bash
+pnpm build
+```
+
+CI runs the same step on every PR — iterating on a pushed PR after a red CI wastes everyone's time.
+
+If your change touches recording, transport, or privacy masking, smoke-test it in a small Vite or Next.js app via `pnpm link` against a local checkout.
+
+## Branch and PR conventions
+
+- **Direct push to `main` is blocked** by repository ruleset — work on a feature branch.
+- **Branch name** is the only post-merge identifier (squash deletes the branch). Pick something short and descriptive: `endpoint-required`, `fix-keepalive-timeout`, `react-store-fix`.
+- **PR title must start with `[<branch-name>]`** — verbatim, including brackets. The repo squashes with `squash_merge_commit_title=PR_TITLE`, so the prefix is what survives in `git log`.
+- **Squash merge only** — both repo setting and ruleset enforce.
+- **Branch auto-deletes on merge.**
+- **Required CI**: the `ci` job from `.github/workflows/ci.yml` (runs `pnpm build`).
+
+PR title body in conventional-commits style after the prefix:
+
+```
+[fix-keepalive-timeout] fix(dozor): cap keepalive payload at 60KB before send
+[react-store-fix] fix(react): re-subscribe after deferred init()
+[docs-tunnel-vercel] docs(dozor): clarify tunnel setup for Vercel rewrites
+```
+
+Scope tags: `dozor`, `react`, `ci`, `docs`, `deps`, `release`, `chore`.
+
+## PR description
+
+Three blocks:
+
+```
+## Context
+What this is and why. One paragraph or 2–3 bullets.
+
+## Implementation notes
+How it was done — libraries, approach, key decisions. Not a diff narration.
+
+## Notes (optional)
+Operational reminders outside the diff — what to do before/after merge.
+Examples: "Bump peerDependency in dozor-react", "Run npm publish after merge".
+Skip if nothing operational is needed — its absence is itself a signal.
+```
+
+## Code conventions
+
+- **Strict TypeScript.** No `any`, no `as unknown as`, no `@ts-ignore`. Reach for a discriminated union or a type guard instead.
+- **Logger interface, not `console.*`.** Every subsystem accepts a `Logger` in its constructor; pass it through to children. `debug: false` (default) returns a no-op logger — zero production overhead.
+- **Disposable for handles.** Anything that allocates timers, listeners, or observers owns a `dispose()` that fully cleans up.
+- **Discriminated unions over boolean flags.** Lifecycle state, slice reasons, transport modes — let TypeScript exhaustiveness-check.
+- **Public API only via `src/index.ts`.** No deep imports — consumers import from the package root.
+- **Versions move in lockstep.** Both packages bump together. A change in core that consumers will see triggers a bump in both, even if the React surface didn't change.
+- **No copy/paste between packages.** If two files start to diverge from a shared idea, extract a helper or move it into core and re-export.
+- **Stable public surface.** Removing or tightening a published option is a deliberate change — note it in the PR description so the dashboard / downstream consumers can adapt.
+
+## Scope of contributions
+
+Welcomed:
+
+- Bug fixes.
+- Improvements to existing patterns (spotted an inconsistency? flag it).
+- Performance work in the recorder / transport hot path.
+- Privacy masking robustness.
+- Documentation — README clarifications, JSDoc, comments where intent isn't obvious.
+
+Open an **issue first** for:
+
+- New SDK options or new methods on `Dozor`.
+- New framework bindings (e.g. `@kharko/dozor-vue`, `@kharko/dozor-svelte`).
+- Dependency additions.
+- Refactors that touch more than ~20 files.
+- Anything that changes the published API surface.
+
+Out of scope (at least for now):
+
+- Test infrastructure (Vitest setup) — being scoped separately.
+- Replacing rrweb.
+- New transport modes beyond `fetch` + keepalive.
+- Built-in session storage backends beyond `sessionStorage` (IndexedDB, etc.).
+
+## Security issues
+
+**Do not open a public issue for security bugs.** See [`SECURITY.md`](./SECURITY.md) for the private-disclosure process.
+
+## Code of conduct
+
+Be kind. Disagree with ideas, not people. English or Ukrainian are both fine in issues and PRs.
