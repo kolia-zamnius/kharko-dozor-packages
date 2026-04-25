@@ -8,7 +8,7 @@
     "url": "https://github.com/kolia-zamnius/kharko-dozor.git",
     "directory": "dozor-react"
   },
-  "homepage": "https://kharko-dozor-dashboard.vercel.app",
+  "homepage": "https://kharko-dozor.vercel.app",
   "bugs": {
     "url": "https://github.com/kolia-zamnius/kharko-dozor/issues"
   },

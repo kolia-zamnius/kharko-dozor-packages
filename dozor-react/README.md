@@ -4,7 +4,7 @@ React bindings for [`@kharko/dozor`](https://www.npmjs.com/package/@kharko/dozor
 
 Provides a `<DozorProvider>` and a `useDozor()` hook to control the recorder from any React component with reactive state updates. Compatible with React 18+ and React Server Components (RSC).
 
-> **Interactive documentation** is coming soon on the [Kharko Dozor Dashboard](https://kharko-dozor-dashboard.vercel.app).
+> **Interactive documentation** is coming soon on the [Kharko Dozor Dashboard](https://kharko-dozor.vercel.app).
 
 ## Install
 

@@ -4,7 +4,7 @@ Lightweight session recording SDK for [Kharko Dozor](https://github.com/kolia-za
 
 Captures DOM mutations via [rrweb](https://github.com/rrweb-io/rrweb), batches them, compresses with gzip, and ships to the Dozor ingest endpoint. Framework-agnostic — works with any JavaScript app. For React, see [`@kharko/dozor-react`](https://www.npmjs.com/package/@kharko/dozor-react).
 
-> **Interactive documentation** is coming soon on the [Kharko Dozor Dashboard](https://kharko-dozor-dashboard.vercel.app).
+> **Interactive documentation** is coming soon on the [Kharko Dozor Dashboard](https://kharko-dozor.vercel.app).
 
 ## Install
 
