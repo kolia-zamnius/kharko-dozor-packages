@@ -15,16 +15,20 @@ Requires **Node.js 20+** and **pnpm 10+**.
 
 ### Scripts
 
-| Command                            | What it does                                                |
-| ---------------------------------- | ----------------------------------------------------------- |
-| `pnpm build`                       | Build all packages (tsup, with type-check)                  |
-| `pnpm build:dozor`                 | Build `@kharko/dozor` only                                  |
-| `pnpm build:react`                 | Build `@kharko/dozor-react` only                            |
-| `pnpm dev:dozor`                   | Watch mode for `@kharko/dozor`                              |
-| `pnpm dev:react`                   | Watch mode for `@kharko/dozor-react`                        |
-| `pnpm test`                        | Run tests across both packages (Vitest, jsdom)              |
-| `pnpm test:coverage`               | Run tests with v8 coverage report                           |
-| `pnpm -F @kharko/dozor test:watch` | Watch-mode tests for one package (replace name as needed)   |
+`package.json` deliberately exposes only what CI runs and what shorthand the workflow actually needs — anything else (watch builds, single-test reruns) goes through `pnpm exec` directly.
+
+| Command                                    | What it does                                                 |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| `pnpm build`                               | Build all packages (tsup, with type-check)                   |
+| `pnpm -F @kharko/<pkg> test`               | Run one package's tests (Vitest, jsdom) — what CI invokes    |
+| `pnpm -r test:coverage`                    | Run all packages' tests with v8 coverage report              |
+
+Local watch loops:
+
+```bash
+pnpm -F @kharko/dozor exec tsup --watch        # rebuild on change
+pnpm -F @kharko/dozor-react exec vitest        # tests in watch mode
+```
 
 Type-check happens via tsup during `pnpm build`. There is no separate lint step. Tests run under jsdom; for behaviour that needs a real browser (CompressionStream, fetch keepalive, real rrweb mutations), smoke-test in a Vite or Next.js app via `pnpm link`.
 
@@ -41,10 +45,11 @@ Two packages live as siblings under the repo root:
 
 ```bash
 pnpm build
-pnpm test
+pnpm -F @kharko/dozor test
+pnpm -F @kharko/dozor-react test
 ```
 
-CI runs both on every PR — iterating after a red CI wastes everyone's time.
+CI runs the same set on every PR — iterating after a red CI wastes everyone's time.
 
 If your change touches recording, transport, or privacy masking, also smoke-test it in a small Vite or Next.js app via `pnpm link` against a local checkout. jsdom approximates the browser well, but the real DOM is the final ground truth.
 
