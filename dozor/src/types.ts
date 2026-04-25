@@ -9,10 +9,10 @@ export type UserTraits = Record<string, unknown>;
 export interface DozorOptions {
   /** Public API key (dp_...) */
   apiKey: string;
-  /** Ingest endpoint URL. Defaults to https://kharko-dozor.vercel.app/api/ingest.
-   *  Can be a relative path (e.g. `/api/monitor`) to route through a same-origin proxy
-   *  for ad-blocker and CORS bypass — see README for setup examples. */
-  endpoint?: string;
+  /** Ingest endpoint URL — full URL (e.g. `https://your-dozor.example.com/api/ingest`)
+   *  or a same-origin relative path (e.g. `/api/monitor`) for ad-blocker and CORS bypass
+   *  via a server proxy. See README for tunnel setup examples. */
+  endpoint: string;
   /** Flush interval in ms. Default: 60000 */
   flushInterval?: number;
   /** Max events per batch before auto-flush. Default: 2000 */

@@ -17,7 +17,6 @@ import { PageTracker } from "./slicing/page-tracker";
 import { SliceManager } from "./slicing/slice-manager";
 import { Transport } from "./transport";
 
-const DEFAULT_ENDPOINT = "https://kharko-dozor.vercel.app/api/ingest";
 const DEFAULT_FLUSH_INTERVAL = 60_000;
 const DEFAULT_BATCH_SIZE = 2_000;
 const DEFAULT_FETCH_TIMEOUT = 10_000;
@@ -58,7 +57,7 @@ export class Dozor {
   // ── Constructor ──────────────────────────────────────
 
   private constructor(options: DozorOptions) {
-    const endpoint = options.endpoint ?? DEFAULT_ENDPOINT;
+    const endpoint = options.endpoint;
     const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
     const flushInterval = options.flushInterval ?? DEFAULT_FLUSH_INTERVAL;
     const fetchTimeout = options.fetchTimeout ?? DEFAULT_FETCH_TIMEOUT;

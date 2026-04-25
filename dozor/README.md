@@ -21,10 +21,13 @@ yarn add @kharko/dozor
 ```ts
 import { Dozor } from "@kharko/dozor";
 
-Dozor.init({ apiKey: "dp_your_public_key" });
+Dozor.init({
+  apiKey: "dp_your_public_key",
+  endpoint: "https://your-dozor.example.com/api/ingest",
+});
 ```
 
-That's it. Recording starts immediately and events are sent to Dozor automatically.
+That's it. Recording starts immediately and events are sent to your ingest endpoint automatically.
 
 ## API
 
@@ -35,6 +38,7 @@ Creates and returns a singleton recorder instance. Calling `init()` multiple tim
 ```ts
 const dozor = Dozor.init({
   apiKey: "dp_your_public_key",
+  endpoint: "https://your-dozor.example.com/api/ingest",
   privacyBlockMedia: true,
 });
 
@@ -45,7 +49,7 @@ dozor.identify("user_123", { email: "user@example.com", name: "John" });
 #### Options
 
 - `apiKey` (`string`) — **Required.** Public project API key (`dp_...`).
-- `endpoint` (`string`) — Ingest endpoint URL. Default: production endpoint. Can be a relative path (e.g. `"/api/monitor"`) to route through a same-origin proxy for ad-blocker bypass — see [Tunnel](#tunnel-ad-blocker-bypass).
+- `endpoint` (`string`) — **Required.** Ingest endpoint URL — full URL (e.g. `"https://your-dozor.example.com/api/ingest"`) or a same-origin relative path (e.g. `"/api/monitor"`) to route through a server proxy for ad-blocker bypass — see [Tunnel](#tunnel-ad-blocker-bypass).
 - `flushInterval` (`number`) — How often to flush buffered events (ms). Default: `60000`.
 - `batchSize` (`number`) — Max events in the buffer before an automatic flush. Default: `2000`.
 - `autoStart` (`boolean`) — Start recording immediately on init. Default: `true`.
@@ -208,13 +212,18 @@ HELD ──────── cancel() ───> STOPPED            (drop buffe
 
 ## Use cases
 
+> Examples below highlight the option being demonstrated. In real code, also pass `endpoint` alongside `apiKey` — both are required (see [Options](#options)).
+
 ### Basic recording
 
 ```ts
 import { Dozor } from "@kharko/dozor";
 
 // Starts recording immediately. Events are batched and sent automatically.
-Dozor.init({ apiKey: "dp_your_key" });
+Dozor.init({
+  apiKey: "dp_your_key",
+  endpoint: "https://your-dozor.example.com/api/ingest",
+});
 ```
 
 ### Deferred start
