@@ -15,19 +15,23 @@ Requires **Node.js 20+** and **pnpm 10+**.
 
 ### Scripts
 
-`package.json` deliberately exposes only what CI runs and what shorthand the workflow actually needs — anything else (watch builds, single-test reruns) goes through `pnpm exec` directly.
+`package.json` only carries CI entries plus per-package shorthand for sub-scope (`build:dozor`, `dev:react`, etc.). One-off ad-hoc runs (coverage, single-test reruns) go through `pnpm -F` / `pnpm exec` directly.
 
-| Command                                    | What it does                                                 |
-| ------------------------------------------ | ------------------------------------------------------------ |
-| `pnpm build`                               | Build all packages (tsup, with type-check)                   |
-| `pnpm -F @kharko/<pkg> test`               | Run one package's tests (Vitest, jsdom) — what CI invokes    |
-| `pnpm -r test:coverage`                    | Run all packages' tests with v8 coverage report              |
+| Command                            | What it does                                              |
+| ---------------------------------- | --------------------------------------------------------- |
+| `pnpm build`                       | Build all packages (tsup, with type-check)                |
+| `pnpm build:dozor`                 | Build `@kharko/dozor` only                                |
+| `pnpm build:react`                 | Build `@kharko/dozor-react` only                          |
+| `pnpm dev:dozor`                   | Watch mode for `@kharko/dozor`                            |
+| `pnpm dev:react`                   | Watch mode for `@kharko/dozor-react`                      |
+| `pnpm -F @kharko/<pkg> test`       | Run one package's tests (Vitest, jsdom) — what CI invokes |
 
-Local watch loops:
+Ad-hoc runs:
 
 ```bash
-pnpm -F @kharko/dozor exec tsup --watch        # rebuild on change
-pnpm -F @kharko/dozor-react exec vitest        # tests in watch mode
+pnpm -F @kharko/dozor exec vitest                              # watch-mode tests
+pnpm -F @kharko/dozor exec vitest run --coverage               # coverage report
+pnpm -F @kharko/dozor exec vitest run src/recorder/transport   # single file
 ```
 
 Type-check happens via tsup during `pnpm build`. There is no separate lint step. Tests run under jsdom; for behaviour that needs a real browser (CompressionStream, fetch keepalive, real rrweb mutations), smoke-test in a Vite or Next.js app via `pnpm link`.

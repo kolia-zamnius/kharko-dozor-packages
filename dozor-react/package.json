@@ -41,8 +41,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "dev": "tsup --watch",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@kharko/dozor": "*",
