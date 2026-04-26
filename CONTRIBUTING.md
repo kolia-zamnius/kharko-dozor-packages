@@ -64,7 +64,7 @@ If your change touches recording, transport, or privacy masking, also smoke-test
 - **PR title must start with `[<branch-name>]`** — verbatim, including brackets. The repo squashes with `squash_merge_commit_title=PR_TITLE`, so the prefix is what survives in `git log`.
 - **Squash merge only** — both repo setting and ruleset enforce.
 - **Branch auto-deletes on merge.**
-- **Required CI**: the `ci` job from `.github/workflows/ci.yml` (runs `pnpm build`).
+- **Required CI**: three checks must go green before merge — `ci` (root `pnpm build`), `test (dozor)`, and `test (dozor-react)` (matrix-driven Vitest runs per package). All defined in `.github/workflows/ci.yml`.
 
 PR title body in conventional-commits style after the prefix:
 
